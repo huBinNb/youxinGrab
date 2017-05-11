@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServlet;
 
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lidehang.data.collection.dao.CompanyDataDao;
+import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
 import com.lidehang.national.foreignCurrency.ForeignCurrencyGrab;
 import com.lidehang.national.foreignCurrency.SinosureGrab;
 import com.lidehang.national.httpsUtil.HttpClientUtil;
@@ -32,6 +36,9 @@ import com.lidehang.national.sinosure.QuotaQuery;
 import com.lidehang.national.sinosure.ShipmentQuery;
 import com.lidehang.national.util.ImageUtil;
 import com.lidehang.national.util.TaxConstants;
+
+import net.minidev.json.annotate.JsonSmartAnnotation;
+import net.sf.json.JSONArray;
 
 /**
  * 保理通
@@ -42,6 +49,8 @@ import com.lidehang.national.util.TaxConstants;
 @RequestMapping(value = "/BltAction")
 public class BltAction extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	private ConcurrentHashMap< String, AtomicBoolean> cmap=new ConcurrentHashMap<String,AtomicBoolean>();
 	
 	@Autowired
 	private CompanyDataDao companyDataDao;
@@ -96,13 +105,52 @@ public class BltAction extends HttpServlet {
 	
 	@GetMapping(value="/getData")
 	@ResponseBody
-	public List<org.bson.Document> getData(@RequestParam String username,@RequestParam String type,@RequestParam String password,@RequestParam String logincode){
+	public Object getData(@RequestParam String username,@RequestParam String type,@RequestParam String password,@RequestParam String logincode){
 		List<org.bson.Document>  data=companyDataDao.getDataByType(username, type);
-		if(!data.contains(username)){
-			if("success".equals(addData(username, password, logincode))){
-			data=companyDataDao.getDataByType(username, type);
+		if(!data.isEmpty()){
+			for (org.bson.Document document : data) {
+			 Set<String>	keys= document.keySet();
+			 	for (String key : keys) {
+					if(document.get(key)!=null&& document.get(key) instanceof List && ((List)document.get(key)).isEmpty()){
+			 		return data;
+				}
 			}
+		}
+		if(cmap.get(username)==null){
+			synchronized (cmap) {
+			  if(cmap.get(username)==null){
+				  cmap.put(username,new AtomicBoolean(true));
+			  }	
+			}
+		}else if(cmap.get(username).get()){
+			return "processing";
+		}else if(!cmap.get(username).get()){
+			cmap.remove(username);
+			return "success";
+		}
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					if("success".equals(addData(username, password, logincode))){
+						List<org.bson.Document> data=companyDataDao.getDataByType(username, type);
+						JSONArray json= JsonArrayUtils.objectToArrray(data);
+						Map<String, Object> map=new HashMap<String,Object>();
+						map.put("jsonStr", json.toString());
+						String result=TaxConstants.postMes(HttpClients.createDefault(), "", map);
+						System.out.println(result);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}finally {
+					cmap.get(username).set(false);
+				}
+			}
+		}).start();
+		return "processing";
 		}
 		return data;
 	}
 }
+

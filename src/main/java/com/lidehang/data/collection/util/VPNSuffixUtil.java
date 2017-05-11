@@ -43,8 +43,10 @@ public class VPNSuffixUtil {
 			vpnUser=taxNumber+"@zsgs";
 		}else if(str.equals("3310")){
 			vpnUser=taxNumber+"@tzgs";
-		}else{
+		}else if(str.equals("3310")){
 			vpnUser=taxNumber+"@lsgs";
+		}else{
+			vpnUser=null;
 		}
 		return vpnUser;
 	}

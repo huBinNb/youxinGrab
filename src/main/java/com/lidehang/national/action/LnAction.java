@@ -163,7 +163,6 @@ public class LnAction extends HttpServlet {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-						
 					}finally {
 						cmap.get(username).set(false);
 					}

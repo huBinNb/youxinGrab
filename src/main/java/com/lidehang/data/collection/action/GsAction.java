@@ -300,7 +300,7 @@ public class GsAction extends HttpServlet{
 						JSONArray json=JsonArrayUtils.objectToArrray(data);
 						Map<String, Object> map=new HashMap<String,Object>();
 						map.put("jsonStr", json.toString());
-						String result=TaxConstants.postMes(HttpClients.createDefault(), "",map);
+						String result=TaxConstants.postMes(HttpClients.createDefault(), "http://wb.lidehang.com/dcsCgsBalanceDetails/callBack/"+companyId+"?token=1", map);
 						System.out.println(result);
 					}
 				} catch (Exception e) {
