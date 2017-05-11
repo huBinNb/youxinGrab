@@ -3,9 +3,13 @@ package com.lidehang.national.action;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServlet;
 
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lidehang.data.collection.dao.CompanyDataDao;
+import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
 import com.lidehang.national.foreignCurrency.ForeignCurrencyGrab;
 import com.lidehang.national.foreignCurrency.ForeignDeclaration;
 import com.lidehang.national.util.ImageUtil;
@@ -34,6 +39,7 @@ import com.lidehang.national.util.TaxConstants;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import net.sf.json.JSONArray;
 
 /**
  * 外汇
@@ -43,6 +49,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value = "/WhAction")
 public class WhAction extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	private ConcurrentHashMap<String, AtomicBoolean> cmap=new ConcurrentHashMap<String,AtomicBoolean>();
 	
 	@Autowired
 	private CompanyDataDao companyDataDao;
@@ -116,21 +124,59 @@ public class WhAction extends HttpServlet {
 		return "success";
 	}
 	
+	//@SuppressWarnings("rawtypes")
 	@ApiOperation(value="获取数据",notes="从mongodb中获取数据")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "companyId", value = "组织机构代码", required = true, dataType = "String"),
+		@ApiImplicitParam(name = "orgCode", value = "组织机构代码", required = true, dataType = "String"),
         @ApiImplicitParam(name = "type", value = "类型", required = true, dataType = "String")
 	})
 	@GetMapping(value="/getData")
-	public List<org.bson.Document> getData(@RequestParam String orgCode,@RequestParam String type,@RequestParam String userCode,@RequestParam String pwd,@RequestParam String code){
+	@ResponseBody
+	public Object getData(@RequestParam String orgCode,@RequestParam String type,@RequestParam String userCode,@RequestParam String pwd,@RequestParam String code){
 		List<org.bson.Document> data=companyDataDao.getDataByType(orgCode, type);
-		if(!data.contains(orgCode)){
-			if("success".equals(addData(orgCode, userCode, pwd, code))){
-				data=companyDataDao.getDataByType(orgCode, type);
+		if(!data.isEmpty()){
+			for (org.bson.Document document : data) {
+				Set<String> keys=document.keySet();
+				for (String key : keys) {
+					if(document.get(key)!=null&&document.get(key) instanceof List && ((List)document.get(key)).isEmpty()){
+						return data;
+					}
+				}
 			}
+		
+		if(cmap.get(orgCode)==null){
+			synchronized (cmap) {
+			if(cmap.get(orgCode)==null){
+				cmap.put(orgCode, new AtomicBoolean(true));
+			}	
+			}
+		}else if(cmap.get(orgCode).get()){
+			return "processing";
+		}else if(!cmap.get(orgCode).get()){
+			cmap.remove(orgCode);
+			return "success";
+		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					if("success".equals(addData(orgCode, userCode, pwd, code))){
+						List<org.bson.Document> data=companyDataDao.getDataByType(orgCode, type);
+						JSONArray json=JsonArrayUtils.objectToArrray(data);
+						Map<String, Object> map=new HashMap<String,Object>();
+						map.put("jsonStr",json.toString());
+						String result=TaxConstants.postMes(HttpClients.createDefault(), "", map);
+						System.out.println(result);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}finally {
+					cmap.get(orgCode).set(false);
+				}
+			  }
+			}).start();
+		return "processing";
 		}
 		return data;
 	}
-	
-	
 }
