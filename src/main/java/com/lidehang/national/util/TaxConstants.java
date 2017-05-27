@@ -20,7 +20,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
+import com.lidehang.core.util.JsonArrayUtils;
 
 public class TaxConstants {
 	/**
@@ -171,9 +171,9 @@ public class TaxConstants {
             try {  
                 HttpEntity entity = response.getEntity();  
                 if (entity != null) {  
-                	System.out.println(entity.getContentEncoding());
-                	 System.out.println(EntityUtils.toString(entity));
-                	 System.out.println(entity.getContent());
+//                	System.out.println(entity.getContentEncoding());
+//                	 System.out.println(EntityUtils.toString(entity));
+//                	 System.out.println(entity.getContent());
                     sp=EntityUtils.toString(entity, "UTF-8");
                 }  
             } finally {  
@@ -195,52 +195,6 @@ public class TaxConstants {
 	 * @return get请求加入指定header
 	 */
 	public static String getMes(CloseableHttpClient httpclient,String Url,String userId){
-		/*String validIp="";
-		RequestConfig requestConfig = null;
-		if(validIp!=null){
-			String[] ips = validIp.split("\\.");
-			byte[] ip = new byte[4];
-			for(int i = 0 ; i < 4; i ++){
-				ip[i] = (byte)Integer.valueOf(ips[i]).intValue();
-			}
-			try {
-				requestConfig = RequestConfig.custom().
-						setExpectContinueEnabled(true).
-						setConnectTimeout(1000).
-						setSocketTimeout(1000).
-						setConnectionRequestTimeout(1000).
-						setCookieSpec(CookieSpecs.NETSCAPE).
-						setCircularRedirectsAllowed(true)
-						.setLocalAddress(InetAddress.getByAddress(ip)).
-						build();
-			} catch (UnknownHostException e1) {
-				e1.printStackTrace();
-			}
-		   String sp=null;
-	        try {  
-	            // 创建httpget.    
-	            HttpGet httpget = new HttpGet(Url);  
-	            httpget.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"); 
-	            httpget.setHeader("USERID",userId);
-	            httpget.setConfig(requestConfig);
-//	            System.out.println("executing request " + httpget.getURI());  
-	            // 执行get请求.    
-	            CloseableHttpResponse response = httpclient.execute(httpget);
-	            try {  
-	                // 获取响应实体    
-	                HttpEntity entity = response.getEntity();  
-	                // 打印响应状态    
-//	                System.out.println(response.getStatusLine());  
-	                if (entity != null) {  
-	                    // 打印响应内容长度    
-//	                    System.out.println("Response content length: " + entity.getContentLength());  
-	                    // 打印响应内容    
-	                    sp=EntityUtils.toString(entity, "UTF-8");
-	                }  
-	            } finally {  
-	                response.close();  
-	            }  */
-		
 			String sp=null;
 	 try {  
          // 创建httpget.    

@@ -81,21 +81,15 @@ public class TestMain {
 		creditInfor.put("reportformat", "21");
 		headerMap.put("Referer", "https://ipcrs.pbccrc.org.cn/reportAction.do?method=queryReport");
 		String creditLogin= httpClientUtil.doPCPost111(httpclient, "https://ipcrs.pbccrc.org.cn/reportAction.do", creditInfor, charset, headerMap);
-		
 		Map<String, String> creditPageMap=new HashMap<>();
 		creditPageMap.put("counttime", "");
 		creditPageMap.put("reportformat", "21");
 		creditPageMap.put("tradeCode", "kqyknd");
 		//url需要修改   个人信用信息提示    个人信用信息概要    个人信用报告
 		String personalCreditReporUrl="https://ipcrs.pbccrc.org.cn/simpleReport.do?method=viewReport";
-		
 		String creditPage=httpClientUtil.doPCPost111(httpclient, reportUrl,creditPageMap, charset, headerMap);
-		
-		
 		//获取个人信用信用报告    需测试
 	    new CreditReport().getPersonalCreditReport(creditPage,userName);
-	    
-	    
 	}
 	
 	

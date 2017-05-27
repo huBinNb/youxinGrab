@@ -3,8 +3,8 @@ package com.lidehang.national.util;
 import java.util.Calendar;
 import java.util.Date;
 
+//获取指定月份的天数  
 public class TimeUtils {
-	//获取指定月份的天数  
     public static int getDaysByYearMonth(int year, int month) {  
         Calendar a = Calendar.getInstance();  
         a.set(Calendar.YEAR, year);  

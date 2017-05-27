@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
@@ -96,6 +97,34 @@ public class ImageUtil {
             e.printStackTrace();  
         }  
     }  
+    
+
+    /**
+     * 将图片输入流转化成字符串
+     * @param input  
+     * @return
+     */
+    public static String encodeImgageToBase64(InputStream input) {// 将输入流转化为字节数组字符串，并对其进行Base64编码处理  
+        ByteArrayOutputStream outputStream = null;  
+        try {  
+            BufferedImage bufferedImage = ImageIO.read(input);
+            outputStream = new ByteArrayOutputStream();  
+            ImageIO.write(bufferedImage, "jpg", outputStream);  
+        } catch (MalformedURLException e1) {  
+            e1.printStackTrace();  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+        // 对字节数组Base64编码  
+
+        return Base64.encodeBase64String(outputStream.toByteArray());
+    }  
+  
+
+    //encodeImgageToBase64
+    public static void main(String[] args) {
+    	System.out.println(encodeImgageToBase64(new File("D:\\photo\\1.jpg")));
+	}
 
 }
 

@@ -21,7 +21,7 @@ public class Swagger{
                 .apiInfo(apiInfo())
                 .select()
 //                .apis(RequestHandlerSelectors.basePackage("com.lidehang.national.action"))
-                .apis(RequestHandlerSelectors.basePackage("com.lidehang.data.collection.action"))
+                .apis(RequestHandlerSelectors.basePackage("com.lidehang.action"))
                 .paths(PathSelectors.any())
                 .build();
     }

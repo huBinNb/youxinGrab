@@ -59,9 +59,9 @@ public class SchoolQuery {
 				photo1 = "";
 			} else {
 				InputStream photo = TaxConstants.getImgCode(httpclient, url);
-				String name = (String) resultMap.get("20001001");
-				LearningGrab.createImgCodeSchool(photo, name);
-				photo1 = ImageUtil.encodeImgageToBase64(new File("D://LearningNetwork//school//" + name + ".jpg"));
+				/*String name = (String) resultMap.get("20001001");
+				LearningGrab.createImgCodeSchool(photo, name);*/
+				photo1 = ImageUtil.encodeImgageToBase64(photo);
 			}
 			resultMap.put(index, photo1);
 			index = String.valueOf(Long.parseLong(index) + 1);

@@ -17,7 +17,7 @@ import org.w3c.dom.ls.LSInput;
 
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.util.CompanyDataUtil;
-import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
+import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.national.util.CreateImgCodeUtil;
 import com.lidehang.national.util.MD5Util;
 import com.lidehang.national.util.TaxConstants;

@@ -16,7 +16,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.util.CompanyDataUtil;
-import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
+import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.national.util.CreateImgCodeUtil;
 import com.lidehang.national.util.MD5Util;
 import com.lidehang.national.util.StringUtils;
@@ -32,7 +32,7 @@ import sun.misc.BASE64Decoder;
  *
  */
 public class LandGrabSbbcxFjs {
-	public String selectLandTaxByDate(CloseableHttpClient httpclient,String userId){
+	public String selectLandTaxByDate(CloseableHttpClient httpclient, String userId,String username){
 		List<org.bson.Document> list = new ArrayList<>();
 		//http://www.zjds-etax.cn/wsbs/api/sb/sbb?sbbz=Y&skssqq=2016-10-01&skssqz=2016-12-31&yzpzzlDm=BDA0610678
 		String response = TaxConstants.getMes(httpclient, "http://www.zjds-etax.cn/wsbs/api/sb/sbb?sbbz=Y&skssqq=2016-10-01&skssqz=2016-12-31&yzpzzlDm=BDA0610678",userId);
@@ -44,7 +44,7 @@ public class LandGrabSbbcxFjs {
 			response = TaxConstants.getMes(httpclient,"http://www.zjds-etax.cn/wsbs/api/sb/fjssbb?pzxh="+json1.getString("pzxh"),userId);
 			Map<String, Object> map1=parseLSSB(response);
 			list.add(CompanyDataUtil.toDocument(baseMap,map1));
-			new CompanyDataDaoImpl().addData("91330110583235134A", "11003", list);
+			new CompanyDataDaoImpl().addData(username, "11003", list);
 			//System.out.println(response);
 		}
 		return null;

@@ -121,7 +121,7 @@ public abstract class SiteHandler<P,M extends ModuleHandler> {
 	public String doCheck() {
 		String stateCode=null;
 		stateCode=checkVPN();
-		if(stateCode.equals("VPN:0")){
+		if(stateCode.startsWith("VPN:登入失败")){
 			return stateCode;
 		}else{
 		try {

@@ -321,7 +321,14 @@ public class CompanyDataUtil {
 				String sign = (String)map.get("11017001");
 				map.put("sign",sign);
 			}
-			
+			if("11026".equals(map.get("serialNumber"))){
+				String sign = (String)map.get("11026001");
+				map.put("sign",sign);
+			}
+			if("11027".equals(map.get("serialNumber"))){
+				String sign = (String)map.get("11027002");
+				map.put("sign",sign);
+			}
 		/*	
 			if("11026".equals(map.get("serialNumber"))){
 				String sign = (String)map.get("11026001003");
@@ -340,9 +347,22 @@ public class CompanyDataUtil {
 				String sign = (String)map.get("14002001");
 				map.put("sign",sign);
 			}
+			//保理通   理赔   可损申请查询
+			if("14003".equals(map.get("serialNumber"))){
+				String sign = (String)map.get("14003001");
+				map.put("sign",sign);
+			}
+			
+			
+			
 			//外汇  已申报（已审核）申报
 			if("15001".equals(map.get("serialNumber"))){
 				String sign = (String)map.get("15001002");
+				map.put("sign",sign);
+			}
+			//外汇  企业档案信息 
+			if("15002".equals(map.get("serialNumber"))){
+				String sign = (String)map.get("15002001");
 				map.put("sign",sign);
 			}
 			

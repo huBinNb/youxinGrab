@@ -14,7 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.util.CompanyDataUtil;
-import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
+import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.national.httpsUtil.HttpClientUtil;
 import com.lidehang.national.util.StringUtils;
 import com.lidehang.national.util.TaxConstants;

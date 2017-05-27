@@ -14,7 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.util.CompanyDataUtil;
-import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
+import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.national.httpsUtil.HttpClientUtil;
 import com.lidehang.national.util.StringUtils;
 import com.lidehang.national.util.TaxConstants;
@@ -61,13 +61,13 @@ public class ShipmentQuery {
 //    	   quotaMap.put("pagenum","2");                                            
     	   quotaMap.put("pagesize","20");                                          
     	   quotaMap.put("pagecount",pagecount);
-    	   
-    	   for (int i = 1; i <=Integer.valueOf(pagecount).intValue(); i++) {
-			String newUrl=jumpUrl+i;
-			response=httpClientUtil.doPost(httpclient, newUrl, quotaMap, charset);
-			List<org.bson.Document>  listPage= parseList(response,httpclient);
-			list.addAll(listPage);
-		}
+    	   int a=Integer.valueOf(pagecount).intValue()/2;
+    		   for (int i = 1; i <=a; i++) {
+    			   String newUrl=jumpUrl+i;
+    			   response=httpClientUtil.doPost(httpclient, newUrl, quotaMap, charset);
+    			   List<org.bson.Document>  listPage= parseList(response,httpclient);
+    			   list.addAll(listPage);
+    		   }
     	   new  CompanyDataDaoImpl().addSinosureData("101676huwq", "14002", list);
     	   return null;
        }

@@ -30,6 +30,7 @@ public class ForeignDeclaration {
        public String  getDeclareQuota(HttpClient httpclient,String organizationCode){
     	   String url="http://bopcom.safesvc.gov.cn/BizforCustomerWeb/servlet/raAuditedSearch?current_appCode=BZCN&asone_addr=asone.safesvc.gov.cn:80";
   	       String response=TaxConstants.getMes(httpclient, url);
+//  	       System.out.println(response);
   	       String jumpUrl= response.substring(response.indexOf("var url = escape("));
   	       jumpUrl = jumpUrl.substring(jumpUrl.indexOf("\"")+1, jumpUrl.indexOf("\")"));
   	       String action="http://bopcom.safesvc.gov.cn"+jumpUrl;

@@ -60,6 +60,7 @@ public class CompanyDataDaoImpl implements CompanyDataDao {
 		String serialNumber2=null;
 		int start=0;
 		int end=0;
+		//国税：1     地税：2		保理通：3		外汇：4		学籍学历：5
 		if("国税".equals(type)){
 			serialNumber1="10000";
 			serialNumber2="11000";
@@ -69,7 +70,7 @@ public class CompanyDataDaoImpl implements CompanyDataDao {
 			serialNumber1="11000";
 			serialNumber2="12000";
 			start=11001;
-			end=11027;
+			end=11028;
 		}else if ("保理通".equals(type)) {
 			serialNumber1="14000";
 			serialNumber2="15000";
@@ -79,7 +80,7 @@ public class CompanyDataDaoImpl implements CompanyDataDao {
 			serialNumber1="15000";
 			serialNumber2="16000";
 			start=15001;
-			end=15002;
+			end=15003;
 		}else if ("学籍学历".equals(type)) {
 			serialNumber1="20000";
 			serialNumber2="21000";

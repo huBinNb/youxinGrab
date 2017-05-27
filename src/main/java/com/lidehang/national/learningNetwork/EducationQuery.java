@@ -68,9 +68,11 @@ public String getInformation(HttpClient httpclient,String userName) {
 			photo1 = "";
 		} else {
 			InputStream photo = TaxConstants.getImgCode(httpclient, url);
-			String name = (String) resultMap.get("20002001");
+			/*String name = (String) resultMap.get("20002001");
 			LearningGrab.createImgCodeEducation(photo,name);
-			photo1=ImageUtil.encodeImgageToBase64(new File("D://LearningNetwork//education//"+name+".jpg"));
+			photo1=ImageUtil.encodeImgageToBase64(new File("D://LearningNetwork//education//"+name+".jpg"));*/
+			photo1 = ImageUtil.encodeImgageToBase64(photo);
+			
 				}
 		resultMap.put(index, photo1);
 		index = String.valueOf(Long.parseLong(index) + 1);

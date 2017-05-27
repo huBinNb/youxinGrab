@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
+import com.lidehang.core.util.JsonArrayUtils;
 
 import net.sf.json.JSONObject;
 import sun.misc.BASE64Decoder;
@@ -45,7 +45,8 @@ public class CreateImgCodeUtil {
 	 * @param ins
 	 */
 	public static void createImgCode1(InputStream ins){
-		File file=new File("D:\\LandCode\\imgCode.jpg");
+//		File file=new File("D:\\LandCode\\imgCode.jpg");
+		File file=new File("D:\\photo\\imgCode.jpg");
 		try {
 			FileOutputStream fileout=new FileOutputStream(file);
 			/**
@@ -63,7 +64,11 @@ public class CreateImgCodeUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+	}
+	
+	
+	public static void main(String[] args) {
+		String a="";
+		createImgCode(a);
 	}
 }

@@ -35,9 +35,9 @@ public class VPNUtils {
 			}
 				System.out.println(info);
 				if(info.indexOf("691")==-1){
-					stateCode="VPN:1";
+					stateCode="VPN:登入成功";
 				}else{
-					stateCode="VPN:0";
+					stateCode="VPN:登入失败";
 					return stateCode;
 				}
 				}else{
@@ -49,20 +49,24 @@ public class VPNUtils {
 					info+=line;
 			}
 				System.out.println(info);
+				if(info.indexOf("691")==-1){
+					stateCode="VPN:登入成功";
+				}else{
+					stateCode="VPN:登入失败";
+					return stateCode;
+				}
 			}
 		} catch (Exception e) {
-//			e.printStackTrace();
 			System.out.println("++++++++VPN连接失败！++++++++");
-			stateCode="VPN:0";
+			stateCode="VPN:登入失败";
 		} finally {
 
 			if (br != null) {
 				try {
 					br.close();
 				} catch (Exception e) {
-//					e.printStackTrace();
 					System.out.println("++++++++VPN连接失败！++++++++");
-					stateCode="VPN:0";
+					stateCode="VPN:登入失败";
 				}
 			}
 			

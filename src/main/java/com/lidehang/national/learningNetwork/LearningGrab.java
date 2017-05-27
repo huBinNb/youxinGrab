@@ -67,4 +67,33 @@ public class LearningGrab {
 			e.printStackTrace();
 		}  
 	 }
+	
+
+	/**
+	 * @param ins
+	 *            通过输入流在本地生成验证码图片
+	 */
+	public static void createImgCode(InputStream ins) {
+		File file = new File("D:\\LearningNetwork\\imgCode.jpg");
+		try {
+			FileOutputStream fileout = new FileOutputStream(file);
+			/**
+			 * 根据实际运行效果 设置缓冲区大小
+			 */
+			byte[] buffer = new byte[1024];
+			int ch = 0;
+			while ((ch = ins.read(buffer)) != -1) {
+				fileout.write(buffer, 0, ch);
+			}
+			ins.close();
+			fileout.flush();
+			fileout.close();
+			//System.out.println("验证码写到本地！");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 }

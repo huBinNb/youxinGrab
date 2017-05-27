@@ -46,9 +46,9 @@ public class GSSiteHandler extends SiteHandler<GSSiteParams,GSModuleBase<GSSiteH
 			String login=postPage("http://100.0.0.120:6000/dzswj/login.jsp?rand=0.6784915976252301",values);
 			
 			if(login.indexOf("您的登陆的用户名或密码错误")==-1){
-				stateCode="1";
+				stateCode="登入成功";//没有表示登入成功
 			}else{
-				stateCode="0";
+				stateCode="国税登入失败";//有表示登入失败
 				return stateCode;
 			}
 		}
@@ -62,7 +62,8 @@ public class GSSiteHandler extends SiteHandler<GSSiteParams,GSModuleBase<GSSiteH
 			List<BasicNameValuePair> values = new ArrayList<BasicNameValuePair>();
 			values.add(new BasicNameValuePair("kaptchafield", ""));
 			values.add(new BasicNameValuePair("number", params.getNationalTaxUser()));
-			values.add(new BasicNameValuePair("password", params.getNationalTaxPwd()));
+			values.add(new BasicNameValuePair("password", params.getNationalTaxPwd()
+					));
 			
 			String login=postPage("http://100.0.0.120:6000/dzswj/login.jsp?rand=0.6784915976252301",values);
 			

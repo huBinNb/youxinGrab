@@ -22,7 +22,7 @@ import org.jsoup.select.Elements;
 
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.util.CompanyDataUtil;
-import com.lidehang.dataInterface.model.constant.JsonArrayUtils;
+import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.national.util.CreateImgCodeUtil;
 import com.lidehang.national.util.MD5Util;
 import com.lidehang.national.util.StringUtils;
@@ -39,13 +39,11 @@ import sun.misc.BASE64Decoder;
  *
  */
 public class LandGrabSbbcxTy {
-	public String selectLandTaxByDate(CloseableHttpClient httpclient,String userId){
+	public String selectLandTaxByDate(CloseableHttpClient httpclient, String userId,String username){
 		List<org.bson.Document> list = new ArrayList<>();
 		//&yzpzzlDm=BDA0610100   &yzpzzlMc=《通用申报表》      http://www.zjds-etax.cn/wsbs/api/sb/sbb?sbbz=Y&skssqq=2016-10-01&skssqz=2016-12-31&yzpzzlDm=BDA0610100
-		String response = TaxConstants.getMes(httpclient, "http://www.zjds-etax.cn/wsbs/api/sb/sbb?sbbz=Y&skssqq=2017-01-01&skssqz=2017-03-31&yzpzzlDm=BDA0610100",userId);
+		String response = TaxConstants.getMes(httpclient, "http://www.zjds-etax.cn/wsbs/api/sb/sbb?sbbz=Y&skssqq=2017-01-01&skssqz=2017-05-16&yzpzzlDm=BDA0610100",userId);
 		JSONArray array = JsonArrayUtils.objectToArrray(response);
-		
-		
 	/*	 //当前时间  年 月
 	     Calendar nowTime=Calendar.getInstance();
 	     int year=nowTime.get(Calendar.YEAR);   
@@ -117,8 +115,6 @@ public class LandGrabSbbcxTy {
 	     }
   		return list;
 		*/
-		
-		
 		for(Object object:array){
 			JSONObject json1 = JsonArrayUtils.objectToJson(object);
 			Map<String, Object> baseMap=parseLssb(json1);
@@ -126,9 +122,9 @@ public class LandGrabSbbcxTy {
 			response = TaxConstants.getMes(httpclient,"http://www.zjds-etax.cn/wsbs/api/sb/tysbb?pzxh="+json1.getString("pzxh"),userId);
 			Map<String, Object> map1=parseLSSB(response);
 			list.add(CompanyDataUtil.toDocument(baseMap,map1));
-			new CompanyDataDaoImpl().addData("91330110583235134A", "11002", list);
+			new CompanyDataDaoImpl().addData(username, "11002", list);
 		}
-		System.out.println(response);
+		//System.out.println(response);
 		return null;
 	}
 
