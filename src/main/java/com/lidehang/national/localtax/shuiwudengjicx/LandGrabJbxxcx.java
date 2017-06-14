@@ -16,9 +16,11 @@ import javax.print.DocFlavor.STRING;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.log4j.Logger;
 
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.util.CompanyDataUtil;
+import com.lidehang.action.DsAction;
 import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.national.util.CreateImgCodeUtil;
 import com.lidehang.national.util.MD5Util;
@@ -35,7 +37,9 @@ import sun.misc.BASE64Decoder;
  *
  */
 public class LandGrabJbxxcx {
+	private static Logger logger = Logger.getLogger(LandGrabJbxxcx.class);
 	public String selectLandTaxByDate(CloseableHttpClient httpclient,String userId,String username){
+		logger.info("地税--税务登记查询--基本信息查询抓取");
 		List<org.bson.Document> list=new ArrayList<>();
 	 /*  String response = TaxConstants.getMes(httpclient, "http://www.zjds-etax.cn/wsbs/api/dj/qy",userId);*/
 		String response1 = TaxConstants.getMes(httpclient, "http://www.zjds-etax.cn/wsbs/api/zs/sfxy",userId);

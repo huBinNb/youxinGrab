@@ -41,7 +41,7 @@ public abstract class SiteHandler<P,M extends ModuleHandler> {
 	 * @return
 	 * @throws SiteLoginFailedException
 	 */
-	protected abstract void login() throws SiteLoginFailedException;
+	protected abstract String login() throws SiteLoginFailedException;
 	
 	/**
 	 * 处理登录操作
@@ -92,26 +92,23 @@ public abstract class SiteHandler<P,M extends ModuleHandler> {
 		begin();
 
 		try {
-			login();
-				
-			if (moduleHandlerList != null && moduleHandlerList.size() > 0) {
-
+			stateCode=login();
+			if(stateCode==null){
+			  if (moduleHandlerList != null && moduleHandlerList.size() > 0) {
 				for (M moduleHandler : moduleHandlerList) {
-					
 					SiteStatus ret = moduleHandler.start(this);
-
 					if (ret == SiteStatus.fail) {
 						// TODO 记录日志
 						break;
 					}
 					// TODO 记录已获取
 				}
+				stateCode="success";
+			 }
 			}
-			
 		} catch (SiteLoginFailedException e) {
 			e.printStackTrace();
 		}
-
 		end();
 		return stateCode;
 	}

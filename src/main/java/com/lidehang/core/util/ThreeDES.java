@@ -33,6 +33,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.lidehang.data.collection.constant.ThreeDesKey;
 
+
 /**
  * 加密方法DESede表示是3des加密方式
  * <p>
@@ -203,7 +204,9 @@ public class ThreeDES {
 	}
 
 	public static void main(String[] args) throws Exception {
+		System.out.println(ThreeDES.encrypt("hubin123456", ThreeDesKey.three_des_base64_key, ThreeDesKey.three_des_iv, ThreeDesKey.three_des_algorithm));
+				
 		
-		System.out.println(ThreeDES.decrypt("fzwsdzirDa+iauyxMP+C0g==", ThreeDesKey.three_des_base64_key, ThreeDesKey.three_des_iv, ThreeDesKey.three_des_algorithm));
+		//System.out.println(ThreeDES.decrypt("c984aed014aec7623a54f0591da07a85fd4b762d", ThreeDesKey.three_des_base64_key, ThreeDesKey.three_des_iv, ThreeDesKey.three_des_algorithm));
 	}
 }

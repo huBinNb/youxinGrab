@@ -290,6 +290,13 @@ public class CompanyDataUtil {
 				map.put("sign",sign);
 			}
 			
+			//海关完税凭证抵扣清单
+			if("10067".equals(map.get("serialNumber"))){
+				String sign =  (String)map.get("10067001") +" "+(String)map.get("10067002")+" "+(String)map.get("10067003");
+				map.put("sign",sign);
+			}
+			
+			
 			
 			if("11002".equals(map.get("serialNumber"))){
 				String sign = (String)map.get("11002002");
@@ -343,13 +350,23 @@ public class CompanyDataUtil {
 				map.put("sign",sign);
 			}
 			//保理通  受理申报
-			if("14002".equals(map.get("serialNumber"))){
+		/*	if("14002".equals(map.get("serialNumber"))){
 				String sign = (String)map.get("14002001");
 				map.put("sign",sign);
-			}
+			}*/
 			//保理通   理赔   可损申请查询
 			if("14003".equals(map.get("serialNumber"))){
 				String sign = (String)map.get("14003001");
+				map.put("sign",sign);
+			}
+			//保理通   出运_出运查询
+			if("14004".equals(map.get("serialNumber"))){
+				String sign = (String)map.get("14004001");
+				map.put("sign",sign);
+			}
+			//保理通    限额_限额余额查询
+			if("14005".equals(map.get("serialNumber"))){
+				String sign = (String)map.get("14005001");
 				map.put("sign",sign);
 			}
 			

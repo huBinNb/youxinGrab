@@ -23,7 +23,7 @@ public class VPNUtils {
 	public static String checkConnectVPN(String userName, String password) {
 		String stateCode=null;
 		System.out.println("打开VPN+++++++");
-		BufferedReader br = null;
+        BufferedReader br = null;
 		try {
 			if(userName.endsWith("hzgs")||userName.endsWith("jxgs")||userName.endsWith("sxgs")||userName.endsWith("hugs")||userName.endsWith("tzgs")){
 				Process p = Runtime.getRuntime().exec("rasdial " + VPN + " " + userName + " " + password);

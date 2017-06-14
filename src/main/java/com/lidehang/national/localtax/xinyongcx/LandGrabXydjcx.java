@@ -14,12 +14,14 @@ import java.util.Scanner;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lidehang.core.util.MongoUtil;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.util.CompanyDataUtil;
+import com.lidehang.action.DsAction;
 import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.national.util.CreateImgCodeUtil;
 import com.lidehang.national.util.MD5Util;
@@ -38,7 +40,10 @@ import sun.misc.BASE64Decoder;
  * @author Hobn
  */
 public class LandGrabXydjcx {
+	private static Logger logger = Logger.getLogger(LandGrabXydjcx.class);
+	
 	public String selectLandTaxByDate(CloseableHttpClient httpclient, String userId,String username){
+		logger.info("地税--信用查询--信用等级查询抓取");
 		Calendar nowTime=Calendar.getInstance();
 		int year=nowTime.get(Calendar.YEAR)-1;
 		

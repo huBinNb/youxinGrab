@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lidehang.action.JsGsAction;
 import com.lidehang.data.collection.constant.SiteStatus;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.exception.SiteLoginFailedException;
@@ -25,9 +27,10 @@ public class XgmsybHandler implements GSModuleBase<GSSiteHandler> {
 
 	// @Autowired
 	// CompanyDataDao companyDataDao;
-
+	public static Logger logger = Logger.getLogger(XgmsybHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
+		logger.info("国税--获取解析存储申报信息 --增值税小规模纳税人-- 损益表");
 		List<org.bson.Document> list = new ArrayList<>();
 		// 获取增值税页面数据
 		String zzsListHtml = siteHandler.getPage(
@@ -48,23 +51,22 @@ public class XgmsybHandler implements GSModuleBase<GSSiteHandler> {
 					.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/" + tr.select("a").attr("href"));
 			Document dyxmDocument = Jsoup.parse(StringUtils.rpAll(dymxListHtml));
 			Elements aDyxm = dyxmDocument.select(".unnamed1 A");
-			boolean flag = true;
+//			boolean flag = true;
 			for (Element b : aDyxm) {
 				//http://100.0.0.1:8001/ctais2/wssb/sjcx/print_syb1.jsp?k=1
 				if (b.attr("href").startsWith("print_syb1")) {
 					String response2 = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/" + b.attr("href"));
-
+//					logger.info("损益表跳转的URL:"+"http://100.0.0.1:8001/ctais2/wssb/sjcx/" + b.attr("href"));
 					Map<String, Object> map = parseSBB(response2);
-
 					list.add(CompanyDataUtil.toDocument(baseMap, map));
-					flag = false;
+//					flag = false;
 				}
 			}
-			if (flag) {
+			/*if (flag) {
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("10024004", "");
 				list.add(CompanyDataUtil.toDocument(baseMap, map));
-			}
+			}*/
 		}
 		new CompanyDataDaoImpl().addData(siteHandler.params.getCompanyId(), "10024", list);
 		return SiteStatus.success;

@@ -55,7 +55,7 @@ public class TestMain {
 		response = httpClientUtil.doPost(httpclient, httpOrgCreateTest, createMap, charset);
 	    response=TaxConstants.getMes(httpclient, "https://sol.sinosure.com.cn/biz/mainFrame/index.jsp?investid=null");
 //	    new QuotaQuery().getApprovedQuota(httpclient);
-	    new ShipmentQuery().getAcceptedDeclare(httpclient);
+//	    new ShipmentQuery().getAcceptedDeclare(httpclient);
 	}
 	
 	

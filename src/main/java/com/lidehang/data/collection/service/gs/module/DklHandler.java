@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lidehang.action.GsAction;
 import com.lidehang.data.collection.constant.SiteStatus;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.exception.SiteLoginFailedException;
@@ -25,9 +27,10 @@ public class DklHandler implements GSModuleBase<GSSiteHandler> {
 	
 //	@Autowired
 //	CompanyDataDao companyDataDao;
-	
+	private static Logger logger =Logger.getLogger(DklHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
+		logger.info("国税--获取解析存储申报信息 -- 抵扣联明细抓取");
 		List<org.bson.Document> list = new ArrayList<>();
 		//获取增值税页面数据
 		String zzsListHtml = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/sbtj_ysbcx.jsp?sssq_q="+siteHandler.params.getStartTimeStr()+"&sssq_z="+siteHandler.params.getEndTimeStr()+"&zsxm_dm=01");
@@ -45,7 +48,7 @@ public class DklHandler implements GSModuleBase<GSSiteHandler> {
 			String dymxListHtml = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/"+tr.select("a").attr("href"));
 			Document dyxmDocument = Jsoup.parse(StringUtils.rpAll(dymxListHtml));
 			Elements aDyxm = dyxmDocument.select(".unnamed1 A");
-			boolean flag = true ;
+//			boolean flag = true ;
 			for(Element b:aDyxm){
 				if(b.attr("href").startsWith("print_zzs_flzl3.jsp")){
 					String response2 = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/"+b.attr("href"));
@@ -53,14 +56,14 @@ public class DklHandler implements GSModuleBase<GSSiteHandler> {
 					Map<String,Object> map = parseSBB(response2);
 					
 					list.add(CompanyDataUtil.toDocument(baseMap,map));
-					flag = false ;
+//					flag = false ;
 				}
 			}
-			if(flag){
-				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("10002004", "");
-				list.add(CompanyDataUtil.toDocument(baseMap,map));
-			}
+//			if(flag){
+//				Map<String,Object> map = new HashMap<String,Object>();
+//				map.put("10002004", "");
+//				list.add(CompanyDataUtil.toDocument(baseMap,map));
+//			}
 		}
 		new CompanyDataDaoImpl().addData(siteHandler.params.getCompanyId(), "10002", list);
 		return SiteStatus.success;

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.client.HttpClient;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,7 +24,9 @@ import com.lidehang.national.util.TaxConstants;
  *
  */
 public class SchoolQuery {
+	private static Logger logger=Logger.getLogger(SchoolQuery.class);
 	public String getInformation(HttpClient httpclient, String userName, String response) {
+		logger.info("学籍查询");
 		List<org.bson.Document> list = new ArrayList<org.bson.Document>();
 		String initData = response.substring(response.indexOf("initDataInfo"));
 		initData = initData.substring(0, initData.indexOf("</script"));

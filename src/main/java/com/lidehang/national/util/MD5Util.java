@@ -6,8 +6,12 @@ import java.security.MessageDigest;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * MD5加密
+ * @author Hobn
+ *
+ */
 public class MD5Util {
-
 	public static String MD5(String s) {
 		if (StringUtils.isEmpty(s)) {
 			return s;

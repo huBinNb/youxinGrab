@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lidehang.action.GsAction;
 import com.lidehang.data.collection.constant.SiteStatus;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.exception.SiteLoginFailedException;
@@ -25,9 +27,10 @@ public class CglHandler implements GSModuleBase<GSSiteHandler> {
 	
 //	@Autowired
 //	CompanyDataDao companyDataDao;
-	
+	private static Logger logger =Logger.getLogger(CglHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
+		logger.info("国税--获取解析存储申报信息 -- 存根联明细抓取");
 		List<org.bson.Document> list = new ArrayList<>();
 		//获取增值税页面数据
 		String zzsListHtml = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/sbtj_ysbcx.jsp?sssq_q="+siteHandler.params.getStartTimeStr()+"&sssq_z="+siteHandler.params.getEndTimeStr()+"&zsxm_dm=01");

@@ -1,15 +1,19 @@
 package com.lidehang.data.collection.service.gs.module;
 
+import static org.mockito.Matchers.booleanThat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lidehang.action.GsAction;
 import com.lidehang.data.collection.constant.SiteStatus;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.exception.SiteLoginFailedException;
@@ -25,9 +29,10 @@ public class Jms_sbmxbHandler implements GSModuleBase<GSSiteHandler> {
 
 	// @Autowired
 	// CompanyDataDao companyDataDao;
-
+	private static Logger logger =Logger.getLogger(Jms_sbmxbHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
+		logger.info("国税--获取解析存储申报信息 -- 减免税申报明细表抓取");
 		List<org.bson.Document> list = new ArrayList<>();
 		// 获取增值税页面数据
 		String zzsListHtml = siteHandler.getPage(
@@ -47,7 +52,6 @@ public class Jms_sbmxbHandler implements GSModuleBase<GSSiteHandler> {
 					.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/" + tr.select("a").attr("href"));
 			Document dyxmDocument = Jsoup.parse(StringUtils.rpAll(dymxListHtml));
 			Elements aDyxm = dyxmDocument.select(".unnamed1 A");
-			boolean flag = true;
 			for (Element b : aDyxm) {
 				// http://100.0.0.1:8001/ctais2/wssb/sjcx/print_zzs_jms_sbmxb.jsp?k=44
 				if (b.attr("href").startsWith("print_zzs_jms_sbmxb")) {
@@ -56,13 +60,7 @@ public class Jms_sbmxbHandler implements GSModuleBase<GSSiteHandler> {
 					//System.out.println(b.attr("href"));
 					Map<String, Object> map = parseSBB(response2, b.attr("href"));
 					list.add(CompanyDataUtil.toDocument(baseMap, map));
-					flag = false;
 				}
-			}
-			if (flag) {
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("10018004", "");
-				list.add(CompanyDataUtil.toDocument(baseMap, map));
 			}
 		}
 		new CompanyDataDaoImpl().addData(siteHandler.params.getCompanyId(), "10018", list);
@@ -91,69 +89,33 @@ public class Jms_sbmxbHandler implements GSModuleBase<GSSiteHandler> {
 	private Map<String, Object> parseSBB(String html, String href_) {
 		Document document = Jsoup.parse(StringUtils.rpAll(html));
 		// table有两张表面：增值税纳税申报表附列资料（表二） 还有一张是unnamed1
-		Elements tables = document.getElementsByTag("table");
-	
-		Map<String, Object> map1 = new HashMap<String, Object>();
 		
-		Map<String, Object> map2 = new HashMap<String, Object>();
-		Map<String, Object> map3 = new HashMap<String, Object>();
+		Element table =document.getElementById("bbTable");
+	
+		
+		Map<String, Object> map1 = new HashMap<String, Object>();
 		List<Object> list = new ArrayList<Object>();
 		String index4 = "10018004";
-		String index5 = "10018004001";
-		String index6 = "";
-		int index7 = 0;
-
-		//table中所有的tr
-		Elements personTrs1 = tables.get(1).getElementsByTag("tr");
-		
+		Elements personTrs1 =table.getElementsByTag("tr");
 			
 		for (int i = 3; i < personTrs1.size(); i++) {
-			//取第i行的tr中所有的td  3 4 5  6 7 8 9
+			String index5 = "10018004001";
+			Map<String, Object> map = new HashMap<String, Object>();
 			Elements tds1 = personTrs1.get(i).getElementsByTag("td");
-			
-			index6 = index5 + "001";
-			//第0个td的值
-			String td = StringUtils.StringFormat(tds1.get(0).text());
-			if("".equals(td)){
+			Element td=tds1.get(0);
+			Elements flag=td.getElementsByTag("strong");
+			if(!flag.isEmpty()){
+				i=i+2;
 				continue;
-			}else{
-				
+			}
 			for (int j = 0; j < tds1.size(); j++) {
-				
-				if (tds1.size() == 1) {
-					if (map1.size() > 0) {
-						// 10018004001
-						map3.put(index5, list);
-						map1 = new HashMap<String, Object>();
-						list = new ArrayList<Object>();
-					}
-					index7 = i;// +3 5
-					index5 = String.valueOf((Long.parseLong(index5) + 1));
-				}
-				
-				if (i >= index7 && i <= (index7 + 2)) {
-					continue;
-				}
-				
-				
-				td = StringUtils.StringFormat(tds1.get(j).text());
-				map1.put(index6, td);
-				
-				index6 = String.valueOf((Long.parseLong(index6) + 1));
-				
-			
+				String value=tds1.get(j).text();
+				map.put(index5, value);
+				index5=String.valueOf(Long.parseLong(index5)+1);
 			}
-			
-			
-			}
-		
-			if (map1.size() > 0) {
-				list.add(map1);
-			}
-			
+			list.add(map);
 		}
-		map3.put(index5, list);
-		map2.put(index4, map3);
-		return map2;
+		map1.put(index4, list);
+		return map1;
 	}
 }

@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import com.lidehang.data.collection.exception.SiteLoginFailedException;
 import com.lidehang.data.collection.exception.SiteNotLoginException;
@@ -56,7 +59,8 @@ public class GSSiteHandler extends SiteHandler<GSSiteParams,GSModuleBase<GSSiteH
 	}
 	
 	@Override
-	public void login() throws SiteLoginFailedException {
+	public String  login() throws SiteLoginFailedException {
+	String stateCode=null;
 		if(client == null){
 			client = HttpClients.createDefault();
 			List<BasicNameValuePair> values = new ArrayList<BasicNameValuePair>();
@@ -68,10 +72,15 @@ public class GSSiteHandler extends SiteHandler<GSSiteParams,GSModuleBase<GSSiteH
 			String login=postPage("http://100.0.0.120:6000/dzswj/login.jsp?rand=0.6784915976252301",values);
 			
 			String html = getPage("http://100.0.0.120:6000/dzswj/information.jsp");
-			getPage("http://100.0.0.120:6000/dzswj/getpages.jsp?node=sbns&djxh="+StringUtils.getDjxh(html));
-//			String indexMes = getPage("http://100.0.0.1:8001/ctais2/wssb/sb_nssb.jsp");
-			System.out.println(StringUtils.getDjxh(html));
+			String response=getPage("http://100.0.0.120:6000/dzswj/getpages.jsp?node=sbns&djxh="+StringUtils.getDjxh(html));
+			Document doc=Jsoup.parse(response);
+			Elements tops=doc.getElementsByClass("top-cx");
+			String href=tops.get(0).select("a").attr("href");
+			if(!href.equals("sjcx/sb_sjcx.jsp")){
+				stateCode="国税系统维护中";
+			}
 		}
+		return stateCode;
 	}
 	
 

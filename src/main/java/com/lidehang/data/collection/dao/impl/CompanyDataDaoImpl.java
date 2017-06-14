@@ -65,7 +65,7 @@ public class CompanyDataDaoImpl implements CompanyDataDao {
 			serialNumber1="10000";
 			serialNumber2="11000";
 			start=10001;
-			end=10067;
+			end=10068;
 		}else if ("地税".equals(type)) {
 			serialNumber1="11000";
 			serialNumber2="12000";
@@ -75,12 +75,12 @@ public class CompanyDataDaoImpl implements CompanyDataDao {
 			serialNumber1="14000";
 			serialNumber2="15000";
 			start=14001;
-			end=14003;
+			end=14006;
 		}else if ("外汇".equals(type)) {
 			serialNumber1="15000";
 			serialNumber2="16000";
 			start=15001;
-			end=15003;
+			end=15005;
 		}else if ("学籍学历".equals(type)) {
 			serialNumber1="20000";
 			serialNumber2="21000";

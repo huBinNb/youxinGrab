@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.client.HttpClient;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,12 +21,13 @@ import com.lidehang.national.util.TaxConstants;
 import com.lidehang.national.util.TimeUtils;
 
 /** 外汇
- * 涉外收入申报表
+ * 涉外收入申报表-已申报（已审核）信息查询
  * 
  * @author Hobn
  *
  */
 public class ForeignDeclaration {
+	  private static Logger logger=Logger.getLogger(ForeignDeclaration.class);
 	   //已申报（已审核）信息查询
        public String  getDeclareQuota(HttpClient httpclient,String organizationCode){
     	   String url="http://bopcom.safesvc.gov.cn/BizforCustomerWeb/servlet/raAuditedSearch?current_appCode=BZCN&asone_addr=asone.safesvc.gov.cn:80";
@@ -37,6 +39,7 @@ public class ForeignDeclaration {
   	       response= TaxConstants.getMes(httpclient, action);
   	       List<org.bson.Document>  list= parseList(httpclient,jumpUrl);
   	       new CompanyDataDaoImpl().addData(organizationCode, "15001", list);
+  	       logger.info("外汇--涉外收入申报表-已申报（已审核）信息查询抓取");
   	       return null;
        }
        
