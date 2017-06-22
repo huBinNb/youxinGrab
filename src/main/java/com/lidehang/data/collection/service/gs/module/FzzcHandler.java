@@ -21,7 +21,7 @@ import com.lidehang.data.collection.util.CompanyDataUtil;
 import com.lidehang.national.util.StringUtils;
 
 /**
- * 获取解析存储增值税申报表 
+ * 获取解析存储增值税申报表  资产负债表
  */
 public class FzzcHandler implements GSModuleBase<GSSiteHandler> {
 	
@@ -30,7 +30,7 @@ public class FzzcHandler implements GSModuleBase<GSSiteHandler> {
 	private static Logger logger =Logger.getLogger(FzzcHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
-		logger.info("国税--获取解析存储增值税申报表 抓取");
+		logger.info("国税--获取解析存储增值税申报表 资产负债表 抓取");
 		List<org.bson.Document> list = new ArrayList<>();
 		//获取增值税页面数据
 		String zzsListHtml = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/sbtj_ysbcx.jsp?sssq_q="+siteHandler.params.getStartTimeStr()+"&sssq_z="+siteHandler.params.getEndTimeStr()+"&zsxm_dm=90");
@@ -44,6 +44,9 @@ public class FzzcHandler implements GSModuleBase<GSSiteHandler> {
 				break;
 			}
 			Map<String,Object> baseMap = parseLssb(tr);
+			if(baseMap.get("item").equals("useless")){
+				continue;
+			}
 			
 			String dymxListHtml = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/"+tr.select("a").attr("href"));
 			Document dyxmDocument = Jsoup.parse(StringUtils.rpAll(dymxListHtml));
@@ -74,6 +77,15 @@ public class FzzcHandler implements GSModuleBase<GSSiteHandler> {
 	 */
 	private Map<String,Object> parseLssb(Element tr){
 		Map<String, Object> map = new HashMap<String, Object>();
+//		logger.info(tr.child(1).child(0).text());
+		if(tr.child(1).child(0).text().contains("年度")||tr.child(1).child(0).text().startsWith("小企业会计准则财务报表")){
+			map.put("item", "useless");
+		}else if((tr.child(3).child(0).text().substring(5, 7).equals("12"))&&(tr.child(4).child(0).text().substring(5, 7).equals("12"))){
+			map.put("item", "年表");
+		}else{
+			map.put("item", "月表");
+		}
+		
 		map.put("10005001", tr.child(2).child(0).text());
 		map.put("10005002", tr.child(3).child(0).text());
 		map.put("10005003", tr.child(4).child(0).text());

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,6 +15,7 @@ import com.lidehang.data.collection.constant.SiteStatus;
 import com.lidehang.data.collection.dao.impl.CompanyDataDaoImpl;
 import com.lidehang.data.collection.exception.SiteLoginFailedException;
 import com.lidehang.data.collection.service.gs.GSModuleBase;
+import com.lidehang.data.collection.service.gs.module.XgmsybHandler;
 import com.lidehang.data.collection.service.gs.site.GSSiteHandler;
 import com.lidehang.data.collection.util.CompanyDataUtil;
 import com.lidehang.national.util.StringUtils;
@@ -25,9 +27,10 @@ public class Fb1_srmxbHandler implements GSModuleBase<GSSiteHandler> {
 
 	// @Autowired
 	// CompanyDataDao companyDataDao;
-
+	private static Logger logger = Logger.getLogger(Fb1_srmxbHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
+		logger.info("国税--企业所得税和非居民企业所得税(包括季报和年报)--收入明细表");
 		List<org.bson.Document> list = new ArrayList<>();
 		// 获取增值税页面数据
 		String zzsListHtml = siteHandler.getPage(

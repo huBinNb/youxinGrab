@@ -27,7 +27,7 @@ public class XgmsybHandler implements GSModuleBase<GSSiteHandler> {
 
 	// @Autowired
 	// CompanyDataDao companyDataDao;
-	public static Logger logger = Logger.getLogger(XgmsybHandler.class);
+	private static Logger logger = Logger.getLogger(XgmsybHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
 		logger.info("国税--获取解析存储申报信息 --增值税小规模纳税人-- 损益表");
@@ -46,6 +46,9 @@ public class XgmsybHandler implements GSModuleBase<GSSiteHandler> {
 				break;
 			}
 			Map<String, Object> baseMap = parseLssb(tr);
+			if(baseMap.get("item").equals("useless")||baseMap.get("item").equals("月表")){
+				continue;
+			}
 
 			String dymxListHtml = siteHandler
 					.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/" + tr.select("a").attr("href"));
@@ -54,6 +57,7 @@ public class XgmsybHandler implements GSModuleBase<GSSiteHandler> {
 //			boolean flag = true;
 			for (Element b : aDyxm) {
 				//http://100.0.0.1:8001/ctais2/wssb/sjcx/print_syb1.jsp?k=1
+//				logger.info(b.attr("href"));
 				if (b.attr("href").startsWith("print_syb1")) {
 					String response2 = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/" + b.attr("href"));
 //					logger.info("损益表跳转的URL:"+"http://100.0.0.1:8001/ctais2/wssb/sjcx/" + b.attr("href"));
@@ -77,6 +81,14 @@ public class XgmsybHandler implements GSModuleBase<GSSiteHandler> {
 	 */
 	private Map<String, Object> parseLssb(Element tr) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		if(tr.child(1).child(0).text().contains("年度")||tr.child(1).child(0).text().startsWith("小企业会计准则财务报表")){
+			map.put("item", "useless");
+		}else if((tr.child(3).child(0).text().substring(5, 7).equals("12"))&&(tr.child(4).child(0).text().substring(5, 7).equals("12"))){
+			map.put("item", "年表");
+		}else{
+			map.put("item", "月表");
+		}
+		
 		map.put("10024001", StringUtils.StringFormat(tr.child(2).child(0).text()));
 		map.put("10024002", StringUtils.StringFormat(tr.child(3).child(0).text()));
 		map.put("10024003", StringUtils.StringFormat(tr.child(4).child(0).text()));
@@ -109,6 +121,7 @@ public class XgmsybHandler implements GSModuleBase<GSSiteHandler> {
 			}
 		}
 		map2.put(index4, list);
+//		logger.info(map2);
 		return map2;
 	}
 

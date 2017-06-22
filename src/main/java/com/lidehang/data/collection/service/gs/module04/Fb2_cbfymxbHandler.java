@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,9 +26,11 @@ public class Fb2_cbfymxbHandler implements GSModuleBase<GSSiteHandler> {
 
 	// @Autowired
 	// CompanyDataDao companyDataDao;
-
+	
+	private static Logger logger=Logger.getLogger(Fb2_cbfymxbHandler.class);
 	@Override
 	public SiteStatus start(GSSiteHandler siteHandler) throws SiteLoginFailedException {
+		logger.info("国税--企业所得税和非居民企业所得税(包括季报和年报)--成本费用明细表");
 		List<org.bson.Document> list = new ArrayList<>();
 		// 获取增值税页面数据
 		String zzsListHtml = siteHandler.getPage(
