@@ -34,7 +34,8 @@ public class ShipmentDeclarationQuery {
 	   private String charset = "utf-8";
 	   private HttpClientUtil httpClientUtil=null;
 	   //受理的申报列表
-       public String  getAcceptedDeclare(HttpClient httpclient){
+       public String  getAcceptedDeclare(HttpClient httpclient,String username){
+    	   logger.info("信保通——出运_已受理申报查询抓取开始");
     	   List<org.bson.Document> list=new ArrayList<org.bson.Document>();
     	   httpClientUtil=new HttpClientUtil();
     	   String response = TaxConstants.getMes(httpclient, url);
@@ -63,15 +64,20 @@ public class ShipmentDeclarationQuery {
 //    	   quotaMap.put("pagenum","2");                                            
     	   quotaMap.put("pagesize","20");                                          
     	   quotaMap.put("pagecount",pagecount);
-    	   int a=Integer.valueOf(pagecount).intValue()/2;
+    	   
+    	   if(""!=pagecount){
+    		   int a=Integer.valueOf(pagecount).intValue()/2;
     		   for (int i = 1; i <=a; i++) {
     			   String newUrl=jumpUrl+i;
     			   response=httpClientUtil.doPost(httpclient, newUrl, quotaMap, charset);
     			   List<org.bson.Document>  listPage= parseList(response,httpclient);
     			   list.addAll(listPage);
     		   }
-    	   new  CompanyDataDaoImpl().addSinosureData("101676huwq", "14002", list);
-    	   logger.info("信保通——出运_已受理申报查询抓取");
+    	   }/*else {
+    		   list=new ArrayList<org.bson.Document>();
+    	   }*/
+    	   new  CompanyDataDaoImpl().addSinosureData(username, "14002", list);
+    	   logger.info("信保通——出运_已受理申报查询抓取结束");
     	   return null;
        }
        
@@ -84,7 +90,7 @@ public class ShipmentDeclarationQuery {
         */
        private List<org.bson.Document> parseList(String response,HttpClient httpclient) {
     	   List<org.bson.Document> list = new ArrayList<>();
-    	   Document doc=Jsoup.parse(response);
+    	   Document doc=Jsoup.parse(StringUtils.rpAll(response));
     	   Element powerTable= doc.getElementById("PowerTable");
            Elements trs = powerTable.select("table").select("tr");
            for(int i = 1;i<trs.size();i++){
@@ -117,7 +123,7 @@ public class ShipmentDeclarationQuery {
     	List<Object> list=new ArrayList<Object>();
     	Map<String, Object> detailsMap=new HashMap<String,Object>();
     	String response=TaxConstants.getMes(httpclient, url);
-    	Document doc=Jsoup.parse(response);
+    	Document doc=Jsoup.parse(StringUtils.rpAll(response));
     	Elements tables=doc.select("[bordercolordark=#FFFFFF]");
     	for(int i=0;i<tables.size();i++){
     		Map<String, Object> aloneMap=new HashMap<String,Object>();
@@ -184,7 +190,7 @@ public class ShipmentDeclarationQuery {
      	Map<String, Object> detailsMap=new HashMap<String,Object>();
        	String response=TaxConstants.getMes(httpclient, url);
 //       	System.out.println(response);
-       	Document doc=Jsoup.parse(response);
+       	Document doc=Jsoup.parse(StringUtils.rpAll(response));
        	Elements tds=doc.select("[id=myTable]").select("td");
        	String index1=String.valueOf((Long.parseLong(index)*1000+001));
        	for (int i = 1; i < tds.size(); i++) {

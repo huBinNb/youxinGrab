@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.Header;
+import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -15,7 +16,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;  
+import org.apache.http.util.EntityUtils;
+
+import com.google.common.cache.Weigher;  
 /* 
  * 利用HttpsClient进行post请求的工具类   https post
  */  
@@ -26,7 +29,14 @@ public class HttpClientUtil {
         try{  
             httpPost = new HttpPost(url);  
             httpPost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36"); 
-          //  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded"); 
+//            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded"); 
+//            httpPost.setHeader("Referer", "http://etax.jsgs.gov.cn/sso/login?service=http%3A%2F%2Fetax.jsgs.gov.cn%2Fportal%2Findex.do"); 
+         /*   HeaderIterator  it=   httpPost.headerIterator();
+            while (it.hasNext()) {
+				Object object = (Object) it.next();
+				System.out.println(object);
+			}*/
+            
             
             //设置参数  
             List<NameValuePair> list = new ArrayList<NameValuePair>();  

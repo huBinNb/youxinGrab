@@ -188,7 +188,9 @@ public class GsAction extends HttpServlet{
 					jsonObject= JsonArrayUtils.objectToJson(jsons);
 					logger.info(jsonObject);
 				}
+				logger.info("jsonObject:"+jsonObject.toString());
 				String updateTime=jsonObject.getString("updateTime");
+				logger.info("updateTime:"+updateTime);
 				int lastUpdateYear=Integer.valueOf(updateTime.substring(0, 4));
 				int lastUpdateMonth=Integer.valueOf(updateTime.substring(4, 6));
 				int lastUpdateDay=Integer.valueOf(updateTime.substring(6));
@@ -400,6 +402,7 @@ public class GsAction extends HttpServlet{
 						map.put("jsonStr", json.toString());
 						//dcsCgsBalanceDetails  回调对方的接口
 						String aurlllsss=dataGrabUrl+pathStr+"/callBack/"+companyId+"?token="+token;
+						logger.info(aurlllsss);
 						String response=TaxConstants.postMes(HttpClients.createDefault(), dataGrabUrl+pathStr+"/callBack/"+companyId+"?token="+token, map);
 						logger.info("callBack:"+response);
 					}else{
@@ -408,7 +411,7 @@ public class GsAction extends HttpServlet{
 						map.put("code", 0004);
 						map.put("msg", stateCode);//国税系统维护中
 						//dcsCgsBalanceDetails  回调对方的接口 上线时需要将这个接口地址改改
-						String aurlll=dataGrabUrl+pathStr+"/callBack/"+companyId+"?token="+token;
+//						String aurlll=dataGrabUrl+pathStr+"/callBack/"+companyId+"?token="+token;
 						String response=TaxConstants.postMes(HttpClients.createDefault(), dataGrabUrl+pathStr+"/callBack/"+companyId+"?token="+token, map);
 						System.out.println(response);
 					}

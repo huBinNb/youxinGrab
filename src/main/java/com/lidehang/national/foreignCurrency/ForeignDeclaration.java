@@ -30,6 +30,7 @@ public class ForeignDeclaration {
 	  private static Logger logger=Logger.getLogger(ForeignDeclaration.class);
 	   //已申报（已审核）信息查询
        public String  getDeclareQuota(HttpClient httpclient,String organizationCode){
+    	   logger.info("外汇--涉外收入申报表-已申报（已审核）信息查询抓取开始");
     	   String url="http://bopcom.safesvc.gov.cn/BizforCustomerWeb/servlet/raAuditedSearch?current_appCode=BZCN&asone_addr=asone.safesvc.gov.cn:80";
   	       String response=TaxConstants.getMes(httpclient, url);
 //  	       System.out.println(response);
@@ -39,7 +40,7 @@ public class ForeignDeclaration {
   	       response= TaxConstants.getMes(httpclient, action);
   	       List<org.bson.Document>  list= parseList(httpclient,jumpUrl);
   	       new CompanyDataDaoImpl().addData(organizationCode, "15001", list);
-  	       logger.info("外汇--涉外收入申报表-已申报（已审核）信息查询抓取");
+  	       logger.info("外汇--涉外收入申报表-已申报（已审核）信息查询抓取结束");
   	       return null;
        }
        

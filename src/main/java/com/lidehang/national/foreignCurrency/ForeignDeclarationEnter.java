@@ -32,13 +32,14 @@ public class ForeignDeclarationEnter{
 	   private static Logger logger=Logger.getLogger(ForeignDeclarationEnter.class);
 	   //申报信息录入
        public String  getInformation(HttpClient httpclient,String organizationCode){
+    	   logger.info("外汇-- 涉外收入申报表--申报信息录入抓取开始");
     		//http://asone.safesvc.gov.cn/BizforCustomerWeb/servlet/raBaseInfoSearch?current_appCode=BZCN&asone_addr=asone.safesvc.gov.cn:80
     	   String url="http://asone.safesvc.gov.cn/BizforCustomerWeb/servlet/raBaseInfoSearch?current_appCode=BZCN&asone_addr=asone.safesvc.gov.cn:80";
   	       String response=TaxConstants.getMes(httpclient, url);
 //  	       logger.info("相应的值："+response);
   	       List<org.bson.Document>  list= parseList(httpclient,response);
   	       new CompanyDataDaoImpl().addData(organizationCode, "15004", list);
-  	       logger.info("外汇-- 涉外收入申报表--申报信息录入抓取");
+  	       logger.info("外汇-- 涉外收入申报表--申报信息录入抓取结束");
   	       return null;
        }
        

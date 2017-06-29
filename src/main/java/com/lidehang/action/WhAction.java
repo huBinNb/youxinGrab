@@ -98,7 +98,6 @@ public class WhAction extends HttpServlet {
 		hmap.put("httpclient", httpclient);
 		InputStream imgcode=TaxConstants.getImgCode(httpclient, "http://asone.safesvc.gov.cn/asone/jsp/code.jsp?refresh=" + Math.random());
 		String code=ImageUtil.encodeImgageToBase64(imgcode);
-		logger.info(code);
 		return code;
 	}
 	
@@ -304,7 +303,7 @@ public class WhAction extends HttpServlet {
 			}
 		    }else {
 				if(cmap.get(orgCode)!=null){
-					cmap.get(orgCode).set(false);
+//					cmap.get(orgCode).set(false);
 					cmap.remove(orgCode);
 					hmap.remove("httpclient");
 				}

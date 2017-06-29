@@ -36,6 +36,7 @@ public class QuotaQuery {
 	    * @return
 	    */
        public String  getApprovedQuota(HttpClient httpclient,String username){
+    	   logger.info("信保通——批复限额查询抓取开始");
     	   List<org.bson.Document> list=new ArrayList<org.bson.Document>();
     	   httpClientUtil=new HttpClientUtil();
     	   Map<String, String> quotaMap=new HashMap<String, String>();
@@ -118,12 +119,12 @@ public class QuotaQuery {
 			response=httpClientUtil.doPost(httpclient, url, quotaMap, charset);
 		    List<org.bson.Document> listPage= parseQuotaList(response,httpclient);
 		    list.addAll(listPage);
-		}
-    	   }else{
-    		   list.addAll(null);
-    	   }
+    	   		}
+    	   }/*else{
+    		   list=new ArrayList<org.bson.Document>();
+    	   }*/
     	   new  CompanyDataDaoImpl().addSinosureData(username, "14001", list);
-    	   logger.info("信保通——批复限额查询抓取");
+    	   logger.info("信保通——批复限额查询抓取结束");
     	   return null;
        }
        

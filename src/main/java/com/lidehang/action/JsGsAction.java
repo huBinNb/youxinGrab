@@ -1,6 +1,5 @@
 package com.lidehang.action;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +19,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,17 +33,15 @@ import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.data.collection.dao.CompanyDataDao;
 import com.lidehang.data.collection.returnInfo.GetDataResponse;
 import com.lidehang.national.foreignCurrency.ForeignBasicInfo;
-import com.lidehang.national.foreignCurrency.ForeignCurrencyGrab;
 import com.lidehang.national.foreignCurrency.ForeignDeclaration;
 import com.lidehang.national.httpsUtil.HttpClientUtil;
 import com.lidehang.national.util.ImageUtil;
-import com.lidehang.national.util.MD5Util;
 import com.lidehang.national.util.SHA256Util;
-import com.lidehang.national.util.StringUtils;
 import com.lidehang.national.util.TaxConstants;
 
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * 江苏国税数据抓取
@@ -85,7 +81,7 @@ public class JsGsAction extends HttpServlet {
 		//http://asone.safesvc.gov.cn/asone/jsp/code.jsp?refresh=1495445325467  
 		CloseableHttpClient httpclient=HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy()).build();
 		hmap.put("httpclient", httpclient);
-		InputStream imgcode=TaxConstants.getImgCode(httpclient, "http://etax.jsgs.gov.cn/sso/captcha?id=" + Math.random());
+		InputStream imgcode=TaxConstants.getImgCode(httpclient, "http://etax.jsgs.gov.cn/sso/captcha2?id=" + new Date().getTime());
 		String code=ImageUtil.encodeImgageToBase64(imgcode);
 		return code;
 	}
@@ -100,23 +96,6 @@ public class JsGsAction extends HttpServlet {
 	@PostMapping(value="/checkLogin")
 	@ResponseBody
 	public GetDataResponse checkLogin(@RequestParam String username,@RequestParam String password,@RequestParam String yzm) {
-		
-		/**
-		 *  username:913202025703691840
-			password:4e1cd749a3d0fe6bbb5467172ab292e5104572f9114c2e1a70463f066f7c0abf
-			yzm:e5ku
-			loginmode:00
-			causername:
-			cacert:
-			signature:
-			lt:LT-5689778-AMQqfa6VhursU4uUkmrAXeD9awebck-sso.jsgs.gov.cn
-			execution:e2s1
-			_eventId:submit
-			lt:LT-5689778-AMQqfa6VhursU4uUkmrAXeD9awebck-sso.jsgs.gov.cn
-			execution:e2s1
-			_eventId:submit
-		 */
-		
 		GetDataResponse getDataResponse=new GetDataResponse();
 		String charset = "utf-8";
 		String lt =null;
@@ -133,54 +112,90 @@ public class JsGsAction extends HttpServlet {
 			execution = doc.getElementsByAttributeValue("name", "execution").get(0).val();
 			httpOrgCreateTest = "http://etax.jsgs.gov.cn" + doc.getElementById("fm1").attr("action");
 		} catch (Exception e) {
+			e.printStackTrace();
 			 getDataResponse.setCode("400");
 			 getDataResponse.setMessage("登入失败");
 			 return getDataResponse;
 		}
+		Map<String, String> createMap = new HashMap<String, String>();
+		createMap.put("username", username);                                                       
+		createMap.put("loginmode", "00");      
+		createMap.put("causername", "");                                                           
+		String DLM= httpClientUtil.doPost(hmap.get("httpclient"), "http://etax.jsgs.gov.cn/sso/swryHandler?method=upgradePrompt", createMap, charset);
+		JSONObject json=JsonArrayUtils.objectToJson(DLM);
+		Map<String, String> addMap = new HashMap<String, String>();
+		addMap.put("password", SHA256Util.SHA_256(password + "{"+json.getString("DLM")+"}"));                              
+		addMap.put("yzm", yzm);                                                            
+		addMap.put("cacert", "");                                                          
+		addMap.put("signature", "");                                                       
+		addMap.put("lt", lt);                                                              
+		addMap.put("execution", execution);                                                
+		addMap.put("_eventId", "submit");                                                  
+		addMap.put("lt", lt);                                                              
+		addMap.put("execution", execution);                                                
+		addMap.put("_eventId", "submit");    
+		addMap.putAll(createMap);
+		String response1 = httpClientUtil.doPost(hmap.get("httpclient"), httpOrgCreateTest, addMap, charset);
+		System.out.println(response1);
+		try {
+			String returncode =  response1.substring(response1.indexOf("_returncode"));
+			getDataResponse.setCode("400");
+			getDataResponse.setMessage("登入失败");
+			
+		} catch (Exception e) {
+			getDataResponse.setCode("200");
+			getDataResponse.setMessage("登入成功");
+		}
+		
+		
+		
+		
+		/*List<BasicNameValuePair> values=new ArrayList<BasicNameValuePair>();
+		values.add(new BasicNameValuePair("username", username));                                                       
+		values.add(new BasicNameValuePair("loginmode", "00"));      
+		values.add(new BasicNameValuePair("causername", "")); 
+		values.add(new BasicNameValuePair("password", SHA256Util.SHA_256(password + "{"+json.getString("DLM")+"}")));                                   
+		values.add(new BasicNameValuePair("yzm", yzm));                                                                 
+		values.add(new BasicNameValuePair("cacert", ""));                                                               
+		values.add(new BasicNameValuePair("signature", ""));                                                            
+		values.add(new BasicNameValuePair("lt", lt));                                                                   
+		values.add(new BasicNameValuePair("execution", execution));                                                     
+		values.add(new BasicNameValuePair("_eventId", "submit"));                                                       
+		values.add(new BasicNameValuePair("lt", lt));                                                                   
+		values.add(new BasicNameValuePair("execution", execution));                                                     
+		values.add(new BasicNameValuePair("_eventId", "submit"));  
 		
 		Map<String, String> createMap = new HashMap<String, String>();
-		createMap.put("username", username);                                                  
-		createMap.put("password", SHA256Util.SHA_256(password));                              
-		createMap.put("yzm", yzm);                                                            
-		createMap.put("loginmode", "00");                                                     
-		createMap.put("causername", "");                                                      
-		createMap.put("cacert", "");                                                          
-		createMap.put("signature", "");                                                       
-		createMap.put("lt", lt);                                                              
-		createMap.put("execution", execution);                                                
-		createMap.put("_eventId", "submit");                                                  
-		createMap.put("lt", lt);                                                              
-		createMap.put("execution", execution);                                                
-		createMap.put("_eventId", "submit");                                                  
-		                               
-		//Request URL:http://etax.jsgs.gov.cn/sso/login?service=http%3A%2F%2Fetax.jsgs.gov.cn%2Fportal%2Findex.do
-		            //http://etax.jsgs.gov.cn/sso/login?service=http%3A%2F%2Fetax.jsgs.gov.cn%2Fportal%2Findex.do
-		/*Request Method:POST
-		Status Code:302 Moved Temporarily
-		Remote Address:218.94.37.68:80*/
-		String response1 = httpClientUtil.doPost(hmap.get("httpclient"), httpOrgCreateTest, createMap, charset);
+		createMap.put("username", username);                                                       
+		createMap.put("loginmode", "00");      
+		createMap.put("causername", "");                                                           
+		//String respose11= httpClientUtil.doPost(hmap.get("httpclient"), "http://etax.jsgs.gov.cn/sso/swryHandler?method=upgradePrompt", createMap, charset);
+		Map<String, Object> map1=new HashMap<String,Object>();
+		map1.put("password", SHA256Util.SHA_256(password));                                   
+		map1.put("yzm", yzm);                                                                 
+		map1.put("cacert", "");                                                               
+		map1.put("signature", "");                                                            
+		map1.put("lt", lt);                                                                   
+		map1.put("execution", execution);                                                     
+		map1.put("_eventId", "submit");                                                       
+		map1.put("lt", lt);                                                                   
+		map1.put("execution", execution);                                                     
+		map1.put("_eventId", "submit");         
+		map1.putAll(createMap);
+		String response1 = TaxConstants.postMes(hmap.get("httpclient"), httpOrgCreateTest,values);
 		System.out.println(response1);
 //		 response1 =TaxConstants.getMes(hmap.get("httpclient"), "https://sol.sinosure.com.cn/biz/mainFrame/index.jsp?investid=null");
-		
+		response1 =TaxConstants.getMes(hmap.get("httpclient"), "http://etax.jsgs.gov.cn/portal/index.do?ticket=ST-326572-pDEzcXLZgh2FRWbrRAcZ-sso.jsgs.gov.cn");
+		System.out.println(response1);	
+//		httpClientUtil.doPCGet111(httpClient, url, charset, headerMap)
 		 response1 =TaxConstants.getMes(hmap.get("httpclient"), "http://etax.jsgs.gov.cn/portal/index.do");
-		   Document doc1=Jsoup.parse(response1);
-		   try {
-			   Elements errors= doc1.getElementsByClass("xubox_dialog");
-			   if(errors.get(0)!=null){
-				   getDataResponse.setCode("400");
-				   getDataResponse.setMessage(errors.get(0).text());
-			   }else{
-				   getDataResponse.setCode("200");
-				   getDataResponse.setMessage("登入成功");
-			   }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		 System.out.println(response1);
+		   Document doc1=Jsoup.parse(response1);*/
 			return getDataResponse;
 	}
 	
     /**
-     * 数据抓取
+     * 数据抓取```````
      * @param httpclient
      * @param organizationCode  机构代码
      * @return

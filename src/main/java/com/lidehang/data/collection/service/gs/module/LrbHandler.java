@@ -52,6 +52,7 @@ public class LrbHandler implements GSModuleBase<GSSiteHandler> {
 			Elements aDyxm = dyxmDocument.select(".unnamed1 A");
 			boolean flag = true;
 			for(Element b:aDyxm){
+				logger.info(b.attr("href")+baseMap.get("10006001")+" "+baseMap.get("10006002")+" "+baseMap.get("10006003"));
 				if(b.attr("href").startsWith("print_cwbb_xqy_lrb_")||b.attr("href").startsWith("print_cwbb_yb_lrb.jsp")){
 					String response2 = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/"+b.attr("href"));
 					Map<String,Object> map = parseSBB(response2,b.attr("href"));
@@ -75,7 +76,8 @@ public class LrbHandler implements GSModuleBase<GSSiteHandler> {
 	private Map<String,Object> parseLssb(Element tr){
 		Map<String, Object> map = new HashMap<String, Object>();
 //		System.out.println(tr.child(1).child(0).text()+" "+tr.child(3).child(0).text()+" "+tr.child(3).child(0).text()+" "+tr.child(4).child(0).text());
-		if(tr.child(1).child(0).text().contains("年度")||tr.child(1).child(0).text().startsWith("小企业会计准则财务报表")){
+		//(tr.child(3).child(0).text().substring(5, 7).equals("12"))&&(tr.child(4).child(0).text().substring(5, 7).equals("12"))
+		if((tr.child(3).child(0).text().substring(5, 7).equals("01"))&&(tr.child(4).child(0).text().substring(5, 7).equals("12"))){
 			map.put("item", "useless");
 		}else if((tr.child(3).child(0).text().substring(5, 7).equals("12"))&&(tr.child(4).child(0).text().substring(5, 7).equals("12"))){
 			map.put("item", "年表");

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +34,7 @@ import com.lidehang.core.util.JsonArrayUtils;
 import com.lidehang.core.util.MongoUtil;
 import com.lidehang.data.collection.dao.CompanyDataDao;
 import com.lidehang.data.collection.returnInfo.GetDataResponse;
+import com.lidehang.entity.BltEntity;
 import com.lidehang.national.httpsUtil.HttpClientUtil;
 import com.lidehang.national.sinosure.QuotaBalanceQuery;
 import com.lidehang.national.sinosure.QuotaQuery;
@@ -93,6 +95,9 @@ public class BltAction extends HttpServlet {
 		return logincode;
 	}
 
+	
+	
+	
 	/**
 	 * 账户密码验证
 	 * 
@@ -214,23 +219,23 @@ public class BltAction extends HttpServlet {
 		map.put("updateTime", updateTimeStr);
 		collection.insertOne(new org.bson.Document(map));
 		new QuotaQuery().getApprovedQuota(httpclient,username); 			// 批复限额 14001
-		new ShipmentDeclarationQuery().getAcceptedDeclare(httpclient);		// 出运_已受理申报查询 14002   有信需要（投保金额  收汇金额）
+		new ShipmentDeclarationQuery().getAcceptedDeclare(httpclient,username);		// 出运_已受理申报查询 14002   有信需要（投保金额  收汇金额）
 		new SettlementQuery().getDamageClaim(httpclient,username); 			// 理赔 可损申请查询 14003
 		new ShipmentQuery().getShipmentQuota(httpclient,username);			// 出运_出运查询 14004
 		new QuotaBalanceQuery().getBalanceQuota(httpclient,username);	    // 限额_限额余额查询 14005
 		return "success";
 	}
 
-	// ,@RequestParam String pathStr
+	
 	/**
-	 * 对外提供数据接口
+	 * 对外提供数据接口 有信
 	 * 
 	 * @param username 用户名
 	 * @param password 密码
 	 * @param logincode 验证码
 	 * @param type	类型
 	 * @return
-	 */
+	 */     
 	@GetMapping(value = "/getData")
 	public GetDataResponse getData(@RequestParam String username, @RequestParam String password,
 			@RequestParam String logincode, @RequestParam String type, @RequestParam String pathStr) {
@@ -305,6 +310,98 @@ public class BltAction extends HttpServlet {
 			if (cmap.get(username) != null) {
 				cmap.get(username).set(false);
 				cmap.remove(username);
+				hmap.remove("httpclient");
+			}
+		}
+		return getDataResponse;
+	}
+
+	
+	/**
+	 * 对外提供数据接口     企税融
+	 * 
+	 * @param username 用户名
+	 * @param password 密码
+	 * @param logincode 验证码
+	 * @param type	类型
+	 * @param url	链接
+	 * @return
+	 */
+	@PostMapping(value="/getData")
+	public GetDataResponse getData(@RequestBody BltEntity bltEntity) {
+		GetDataResponse getDataResponse = new GetDataResponse();
+		if (cmap.get(bltEntity.getUsername()) == null) {
+			synchronized (cmap) {
+				if (cmap.get(bltEntity.getUsername()) == null) {
+					getDataResponse = checkLogin(bltEntity.getUsername(),bltEntity.getPassword(),bltEntity.getLogincode());
+					cmap.put(bltEntity.getUsername(), new AtomicBoolean(true));
+				}
+			}
+		} else if (cmap.get(bltEntity.getUsername()).get() && getDataResponse.getCode() != null) {
+			getDataResponse.setCode("200");
+			getDataResponse.setMessage("processing");
+			return getDataResponse;
+		} 
+		/*else if (!cmap.get(bltEntity.getUsername()).get()) {
+			getDataResponse.setCode("200");
+			getDataResponse.setData(companyDataDao.getDataByType(bltEntity.getUsername(), bltEntity.getType()));
+			cmap.remove(bltEntity.getUsername());
+			hmap.remove("httpclient");
+			return getDataResponse;
+		}*/
+          //getDataResponse.getCode() != null || 
+		if (("200").equals(getDataResponse.getCode())) {
+			List<org.bson.Document> data = companyDataDao.getDataByType(bltEntity.getUsername(),bltEntity.getType());
+			if (!data.isEmpty()) {
+				for (org.bson.Document document : data) {
+					Set<String> keys = document.keySet();
+					for (String key : keys) {
+						if (document.get(key) != null && document.get(key) instanceof List
+								&& !((List) document.get(key)).isEmpty()) {
+							getDataResponse.setData(data);
+							if (cmap.get(bltEntity.getUsername()) != null) {
+//								cmap.get(bltEntity.getUsername()).set(false);
+								cmap.remove(bltEntity.getUsername());
+								hmap.remove("httpclient");
+							}
+							return getDataResponse;
+						}
+					}
+				}
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							if ("success".equals(addData(hmap.get("httpclient"),bltEntity.getUsername()))) {
+								List<org.bson.Document> data = companyDataDao.getDataByType(bltEntity.getUsername(),bltEntity.getType());
+								JSONArray json = JsonArrayUtils.objectToArrray(data);
+								Map<String, Object> map = new HashMap<String, Object>();
+								map.put("jsonStr", json.toString());
+								// 回调给对方 上线时需要将这个接口地址改改
+								String result = TaxConstants.postMes(HttpClients.createDefault(),
+										dataGrabUrl +bltEntity.getPathStr()+ "/callBack/" + bltEntity.getUsername() + "?key="+bltEntity.getKey()+"&url="+bltEntity.getUrl()+"&pwd="+bltEntity.getPassword(),
+										map);
+								logger.info(result);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							if (cmap.get(bltEntity.getUsername()) != null) {
+//								cmap.remove(username);
+//								hmap.remove("httpclient");
+//								cmap.get(bltEntity.getUsername()).set(false);
+								cmap.remove(bltEntity.getUsername());
+								hmap.remove("httpclient");
+							}
+						}
+					}
+				}).start();
+				getDataResponse.setMessage("processing");
+				return getDataResponse;
+			}
+		} else {
+			if (cmap.get(bltEntity.getUsername()) != null) {
+				cmap.remove(bltEntity.getUsername());
 				hmap.remove("httpclient");
 			}
 		}

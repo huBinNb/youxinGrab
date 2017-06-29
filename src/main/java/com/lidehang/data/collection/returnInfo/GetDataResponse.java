@@ -15,9 +15,4 @@ public class GetDataResponse extends ApiReturn{
 	public void setData(List<Document> data) {
 		this.data = data;
 	}
-
-	
- 
-	
-	
 }

@@ -36,6 +36,7 @@ public class QuotaBalanceQuery {
 	 * @return
 	 */
 	public String getBalanceQuota(HttpClient httpclient,String username) {
+		logger.info("信保通  限额余额查询开始");
 		List<org.bson.Document> list = new ArrayList<org.bson.Document>();
 		httpClientUtil = new HttpClientUtil();
 		Map<String, String> quotaMap = new HashMap<String, String>();
@@ -81,11 +82,11 @@ public class QuotaBalanceQuery {
 				List<org.bson.Document> listPage = parseQuotaList(response, httpclient);
 				list.addAll(listPage);
 			}
-		}else{
+		}/*else{
  		   list.addAll(null);
- 	   }
+ 	   }*/
 		new CompanyDataDaoImpl().addSinosureData(username, "14005", list);
-		logger.info("信保通  限额余额查询");
+		logger.info("信保通  限额余额查询结束");
 		return null;
 	}
 

@@ -52,8 +52,9 @@ public class FzzcHandler implements GSModuleBase<GSSiteHandler> {
 			Document dyxmDocument = Jsoup.parse(StringUtils.rpAll(dymxListHtml));
 			Elements aDyxm = dyxmDocument.select(".unnamed1 A");
 			boolean flag = true;
-			for(Element b:aDyxm){
-				if(b.attr("href").startsWith("print_cwbb_xqy_zcfzb.jsp")){
+			for(Element b:aDyxm){     
+//				logger.info(b.attr("href"));     
+				if(b.attr("href").startsWith("print_cwbb_xqy_zcfzb.jsp")||b.attr("href").startsWith("print_cwbb_yb_zcfzb.jsp")||b.attr("href").startsWith("print_cwbb_yb_zcfzb_2016.jsp")){
 					String response2 = siteHandler.getPage("http://100.0.0.1:8001/ctais2/wssb/sjcx/"+b.attr("href"));
 					
 					Map<String,Object> map = parseSBB(response2);
@@ -77,7 +78,7 @@ public class FzzcHandler implements GSModuleBase<GSSiteHandler> {
 	 */
 	private Map<String,Object> parseLssb(Element tr){
 		Map<String, Object> map = new HashMap<String, Object>();
-//		logger.info(tr.child(1).child(0).text());
+		//logger.info(tr.child(1).child(0).text()+" "+tr.child(3).child(0).text()+" "+tr.child(4).child(0).text());
 		if(tr.child(1).child(0).text().contains("年度")||tr.child(1).child(0).text().startsWith("小企业会计准则财务报表")){
 			map.put("item", "useless");
 		}else if((tr.child(3).child(0).text().substring(5, 7).equals("12"))&&(tr.child(4).child(0).text().substring(5, 7).equals("12"))){

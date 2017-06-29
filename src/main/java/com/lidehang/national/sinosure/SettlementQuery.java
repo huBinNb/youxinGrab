@@ -37,6 +37,7 @@ public class SettlementQuery {
 	    * @return
 	    */
        public String  getDamageClaim(HttpClient httpclient,String username){
+    	   logger.info("信保通  理赔--可损申请查询开始");
     	   List<org.bson.Document> list=new ArrayList<org.bson.Document>();
     	   httpClientUtil=new HttpClientUtil();
     	   Map<String, String> quotaMap=new HashMap<String, String>();
@@ -96,12 +97,12 @@ public class SettlementQuery {
 			response=httpClientUtil.doPost(httpclient, url, quotaMap, charset);
 		    List<org.bson.Document> listPage= parseQuotaList(response,httpclient);
 		    list.addAll(listPage);
-		}
-    	   }else{
+    	   		}
+    	   }/*else{
     		   list.addAll(null);
-    	   }
+    	   }*/
     	   new  CompanyDataDaoImpl().addSinosureData(username, "14003", list);
-    	   logger.info("信保通  理赔--可损申请查询");
+    	   logger.info("信保通  理赔--可损申请查询结束");
     	   return null;
        }
        

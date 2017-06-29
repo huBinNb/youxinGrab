@@ -117,6 +117,8 @@ public class TaxConstants {
 	public static String postMes(CloseableHttpClient httpclient,String Url,List<BasicNameValuePair> values){
         HttpPost httppost = new HttpPost(Url); 
         httppost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"); 
+//        httppost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");  
+        
         // 创建参数队列    
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         for(BasicNameValuePair basicNameValuePair:values){

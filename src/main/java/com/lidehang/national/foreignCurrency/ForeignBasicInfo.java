@@ -30,6 +30,7 @@ public class ForeignBasicInfo {
 	private static Logger logger=Logger.getLogger(ForeignDeclaration.class);
 	// 基础档案管理--企业档案信息
 	public String getDeclareQuota(HttpClient httpclient, String organizationCode) {
+		logger.info("外汇 企业档案信息--企业档案信息抓取开始");
 		String url = "http://bopcom.safesvc.gov.cn/BizforCustomerWeb/servlet/customerSearch?current_appCode=BZCN&asone_addr=asone.safesvc.gov.cn:80";
 		String response = TaxConstants.getMes(httpclient, url);
 		List<org.bson.Document> list = new ArrayList<>();
@@ -71,7 +72,7 @@ public class ForeignBasicInfo {
 		}
 		list.add(CompanyDataUtil.toDocument(resultMap));
 		new CompanyDataDaoImpl().addData(organizationCode, "15002", list);
-		logger.info("外汇 企业档案信息--企业档案信息抓取");
+		logger.info("外汇 企业档案信息--企业档案信息抓取结束");
 		return null;
 	}
 }
